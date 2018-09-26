@@ -14,43 +14,45 @@
 
 #include <avr/sleep.h>      // Librería de ahorro de energía
 
-#define ledPuerta 7         // Pin de salida del Led
-#define ledStandby 13       // Pin de salida para el ahorro de energía
+#define LED_PUERTA 7        // Pin de salida del Led
 
-#define entradaPuerta 3     // Pin de entrada del readSwitch (Simulando la puerta)
-#define alarma 6            // Pin de salida de la alarma
+#define ENTRADA_PUERTA 3    // Pin de entrada del readSwitch (Simulando la puerta)
+#define ALARMA 6            // Pin de salida de la alarma
 
-int frecuencia = 440;       // Frecuencia de salidas de la alarma (440 es la nota LA)
+const int FRECUENCIA = 440; // Frecuencia de salidas de la alarma (440 es la nota LA)
 int estadoPuerta = 0;       // Variable de alamacenamiento del estado del readSwitch
 
 void setup() {
-  set_sleep_mode(SLEEP_MODE_PWR_DOWN);  // Se configura el modo de bajo consumo
-  pinMode(ledPuerta, OUTPUT);           // Modo del pin del led en OUTPUT
-  pinMode(entradaPuerta, INPUT);        // Modo del pin del readswitch en INPUT
-  attachInterrupt(digitalPinToInterrupt(entradaPuerta), interrupcion, RISING);    // Configuración de la interrupción
+  set_sleep_mode(SLEEP_MODE_PWR_DOWN);   // Se configura el modo de bajo consumo
+  pinMode(LED_PUERTA, OUTPUT);           // Modo del pin del led de la puerta
+  pinMode(ENTRADA_PUERTA, INPUT);        // Modo del pin del readswitch
+  attachInterrupt(digitalPinToInterrupt(ENTRADA_PUERTA), interrupcion, RISING);    // Configuración de la interrupción
 }
 
 void loop() {
-  estadoPuerta = digitalRead(entradaPuerta);    // Guardado del estado del readSwitch
+  estadoPuerta = digitalRead(ENTRADA_PUERTA);    // Guardado del estado del readSwitch
 
-  sleep_enable();   // Iniciar el modo de bajo consumo para Arduino
-  sleep_mode();     // Se activa el modo de bajo consumo
+  iniciaAhorro();                 // Siempre inicia el ciclo en modo ahorro de energía
   
   if(estadoPuerta == LOW){        // Si no está accionado el readSwitch
-    digitalWrite(ledStandby, LOW);    // Apagado del led de ahorro de energía
-    digitalWrite(ledPuerta, HIGH);    // Enciende el led
-    tone(alarma, frecuencia);         // Enciende la alarma con la frecuencia marcada
+    
+    digitalWrite(LED_PUERTA, HIGH);   // Enciende el led
+    tone(ALARMA, FRECUENCIA);         // Enciende la alarma con la frecuencia marcada
     delay(1500);                      // Espera de un segundo y medio
-    digitalWrite(ledPuerta, LOW);     // Apaga el led
-    noTone(alarma);                   // Apaga la alarma
+    digitalWrite(LED_PUERTA, LOW);    // Apaga el led
+    noTone(ALARMA);                   // Apaga la alarma
     
   }else{                          // En caso contrario
-    digitalWrite(ledPuerta, LOW);     // El led debe permanecer apagado
-    noTone(alarma);                   // La alarma debe permanecer apagada
-    digitalWrite(ledStandby, HIGH);   // Encendido del led de ahorro de energía
+    digitalWrite(LED_PUERTA, LOW);    // El led debe permanecer apagado
+    noTone(ALARMA);                   // La alarma debe permanecer apagada
   }
 }
 
 void interrupcion(){  // Proceso de interrupción
   sleep_disable();    // Desactiva el modo de bajo consumo
+}
+
+void iniciaAhorro(){
+  sleep_enable();   // Iniciar el modo de bajo consumo para Arduino
+  sleep_mode();     // Se activa el modo de bajo consumo
 }
