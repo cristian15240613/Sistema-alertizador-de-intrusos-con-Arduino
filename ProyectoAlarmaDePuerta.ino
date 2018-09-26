@@ -18,6 +18,7 @@
  * Desarrollador: Angel Christian Alvarez Trujillo
  */
 
+#include <LiquidCrystal.h>  // Librería del display LCD
 #include <avr/sleep.h>      // Librería de ahorro de energía
 
 #define LED_PUERTA 7        // Pin de salida del Led
@@ -25,13 +26,15 @@
 #define ENTRADA_PUERTA 3    // Pin de entrada del readSwitch (Simulando la puerta)
 #define ALARMA 6            // Pin de salida de la alarma
 
-const int FRECUENCIA = 440; // Frecuencia de salidas de la alarma (440 es la nota LA)
-int estadoPuerta = 0;       // Variable de alamacenamiento del estado del readSwitch
+LiquidCrystal lcd(8,9,10,11,12,13); // Definicion de pines para envío de informacion al display
+const int FRECUENCIA = 440;         // Frecuencia de salidas de la alarma (440 es la nota LA)
+int estadoPuerta = 0;               // Variable de alamacenamiento del estado del readSwitch
 
 void setup() {
-  set_sleep_mode(SLEEP_MODE_PWR_DOWN);   // Se configura el modo de bajo consumo
-  pinMode(LED_PUERTA, OUTPUT);           // Modo del pin del led de la puerta
-  pinMode(ENTRADA_PUERTA, INPUT);        // Modo del pin del readswitch
+  lcd.begin(16,2);                      // Se configura la resolucion del LCD
+  set_sleep_mode(SLEEP_MODE_PWR_DOWN);  // Se configura el modo de bajo consumo
+  pinMode(LED_PUERTA, OUTPUT);          // Modo del pin del led de la puerta
+  pinMode(ENTRADA_PUERTA, INPUT);       // Modo del pin del readswitch
   attachInterrupt(digitalPinToInterrupt(ENTRADA_PUERTA), interrupcion, RISING);    // Configuración de la interrupción
 }
 
@@ -58,13 +61,17 @@ void iniciaAhorro(){
 }
 
 void alarma(){      // Metodo para indicar la advertencia
-
-    for(int i = 0; i < 5; i++){
+  
+  for(int i = 0; i < 5; i++){
       digitalWrite(LED_PUERTA, HIGH);   // Enciende el led
       tone(ALARMA, FRECUENCIA);         // Enciende la alarma con la frecuencia marcada
+      lcd.print("A L E R T A  D E");    // Impresion de leyenda en la primera fila del LCD
+      lcd.setCursor(0,1);               // Cambio de puntero a la segunda fila
+      lcd.print(" I N T R U S O");      // Impresion de leyenda en la segunda fila del LCD
       delay(1000);                      // Espera de un segundo
       digitalWrite(LED_PUERTA, LOW);    // Apaga el led
       noTone(ALARMA);                   // Apaga la alarma  
+      lcd.clear();                      // Limpia el LCD
       delay(500);                       // Espera de medio segundo para volver a iniciar el tono y la luz
     } 
 }
