@@ -13,6 +13,7 @@
  */
 
 #define ledPuerta 7         // Pin de salida del Led
+#define ledStandby 13
 #define entradaPuerta 3     // Pin de entrada del readSwitch (Simulando la puerta)
 #define alarma 6            // Pin de salida de la alarma
 int frecuencia = 440;       // Frecuencia de salidas de la alarma (440 es la nota LA)
@@ -28,14 +29,17 @@ void loop() {
   estadoPuerta = digitalRead(entradaPuerta);    // Guardado del estado del readSwitch
   
   if(estadoPuerta == LOW){        // Si no está accionado el readSwitch
+    digitalWrite(ledStandby, LOW);
     digitalWrite(ledPuerta, HIGH);    // Enciende el led
     tone(alarma, frecuencia);         // Enciende la alarma con la frecuencia marcada
     delay(1500);                      // Espera de un segundo y medio
     digitalWrite(ledPuerta, LOW);     // Apaga el led
     noTone(alarma);                   // Apaga la alarma
+    
   }else{                          // En caso contrario
     digitalWrite(ledPuerta, LOW);     // El led debe permanecer apagado
     noTone(alarma);                   // La alarma debe permanecer apagada
+    digitalWrite(ledStandby, HIGH);
   }
 }
 
