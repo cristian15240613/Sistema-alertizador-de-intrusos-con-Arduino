@@ -11,17 +11,21 @@
  *            
  * Desarrollador: Angel Christian Alvarez Trujillo
  */
+#include <avr/sleep.h>      // Librería de ahorro de energía
 
 #define ledPuerta 7         // Pin de salida del Led
-#define ledStandby 13
+#define ledStandby 13       // Pin de salida para el ahorro de energía
+
 #define entradaPuerta 3     // Pin de entrada del readSwitch (Simulando la puerta)
 #define alarma 6            // Pin de salida de la alarma
+
 int frecuencia = 440;       // Frecuencia de salidas de la alarma (440 es la nota LA)
 int estadoPuerta = 0;       // Variable de alamacenamiento del estado del readSwitch
 
 void setup() {
-  pinMode(ledPuerta, OUTPUT);       // Modo del pin del led en OUTPUT
-  pinMode(entradaPuerta, INPUT);    // Modo del pin del readswitch en INPUT
+  set_sleep_mode(SLEEP_MODE_PWR_DOWN);  // Se configura el modo de bajo consumo
+  pinMode(ledPuerta, OUTPUT);           // Modo del pin del led en OUTPUT
+  pinMode(entradaPuerta, INPUT);        // Modo del pin del readswitch en INPUT
   attachInterrupt(digitalPinToInterrupt(entradaPuerta), interrupcion, RISING);    // Configuración de la interrupción
 }
 
@@ -29,7 +33,7 @@ void loop() {
   estadoPuerta = digitalRead(entradaPuerta);    // Guardado del estado del readSwitch
   
   if(estadoPuerta == LOW){        // Si no está accionado el readSwitch
-    digitalWrite(ledStandby, LOW);
+    digitalWrite(ledStandby, LOW);    // Apagado del led de ahorro de energía
     digitalWrite(ledPuerta, HIGH);    // Enciende el led
     tone(alarma, frecuencia);         // Enciende la alarma con la frecuencia marcada
     delay(1500);                      // Espera de un segundo y medio
@@ -39,7 +43,7 @@ void loop() {
   }else{                          // En caso contrario
     digitalWrite(ledPuerta, LOW);     // El led debe permanecer apagado
     noTone(alarma);                   // La alarma debe permanecer apagada
-    digitalWrite(ledStandby, HIGH);
+    digitalWrite(ledStandby, HIGH);   // Encendido del led de ahorro de energía
   }
 }
 
