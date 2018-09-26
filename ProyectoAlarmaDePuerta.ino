@@ -1,4 +1,10 @@
 /*
+ * Tecnológico Nacional de México
+ * Instituto Tecnológico de León
+ * Ingeniería en Sistemas Computacionales
+ * 
+ * Para la materia de: Sistemas Programables
+ * 
  * Desarrollo de una alarma para el acceso a una puerta.
  * Funcionamiento:
  *                - Cuando la puerta se abra, una alarma debe de sonar.
@@ -32,17 +38,11 @@ void setup() {
 void loop() {
   estadoPuerta = digitalRead(ENTRADA_PUERTA);    // Guardado del estado del readSwitch
 
-  iniciaAhorro();                 // Siempre inicia el ciclo en modo ahorro de energía
-  
   if(estadoPuerta == LOW){        // Si no está accionado el readSwitch
-    
-    digitalWrite(LED_PUERTA, HIGH);   // Enciende el led
-    tone(ALARMA, FRECUENCIA);         // Enciende la alarma con la frecuencia marcada
-    delay(1500);                      // Espera de un segundo y medio
-    digitalWrite(LED_PUERTA, LOW);    // Apaga el led
-    noTone(ALARMA);                   // Apaga la alarma
+    alarma();                     // Lanza advertencia
     
   }else{                          // En caso contrario
+    iniciaAhorro();                   // Inicia el modo ahorro de energía
     digitalWrite(LED_PUERTA, LOW);    // El led debe permanecer apagado
     noTone(ALARMA);                   // La alarma debe permanecer apagada
   }
@@ -55,4 +55,16 @@ void interrupcion(){  // Proceso de interrupción
 void iniciaAhorro(){
   sleep_enable();   // Iniciar el modo de bajo consumo para Arduino
   sleep_mode();     // Se activa el modo de bajo consumo
+}
+
+void alarma(){      // Metodo para indicar la advertencia
+
+    for(int i = 0; i < 5; i++){
+      digitalWrite(LED_PUERTA, HIGH);   // Enciende el led
+      tone(ALARMA, FRECUENCIA);         // Enciende la alarma con la frecuencia marcada
+      delay(1000);                      // Espera de un segundo
+      digitalWrite(LED_PUERTA, LOW);    // Apaga el led
+      noTone(ALARMA);                   // Apaga la alarma  
+      delay(500);                       // Espera de medio segundo para volver a iniciar el tono y la luz
+    } 
 }
