@@ -11,6 +11,7 @@
  *            
  * Desarrollador: Angel Christian Alvarez Trujillo
  */
+
 #include <avr/sleep.h>      // Librería de ahorro de energía
 
 #define ledPuerta 7         // Pin de salida del Led
@@ -31,6 +32,9 @@ void setup() {
 
 void loop() {
   estadoPuerta = digitalRead(entradaPuerta);    // Guardado del estado del readSwitch
+
+  sleep_enable();   // Iniciar el modo de bajo consumo para Arduino
+  sleep_mode();     // Se activa el modo de bajo consumo
   
   if(estadoPuerta == LOW){        // Si no está accionado el readSwitch
     digitalWrite(ledStandby, LOW);    // Apagado del led de ahorro de energía
@@ -48,5 +52,5 @@ void loop() {
 }
 
 void interrupcion(){  // Proceso de interrupción
-  
+  sleep_disable();    // Desactiva el modo de bajo consumo
 }
